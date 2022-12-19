@@ -1,0 +1,8 @@
+cradle:
+  cabal:
+    - path: "./test"
+      component: "hurtig:hurtig-test"
+    - path: "./src/"
+      component: "lib:hurtig"
+    - path: "./app"
+      component: "exe:hurtig"

@@ -1,0 +1,63 @@
+cabal-version:   3.4
+name:            hurtig
+version:         0.1.0.0
+
+-- synopsis:
+-- description:
+license:         MIT
+license-file:    LICENSE
+author:          Tobias Pflug
+maintainer:      tobias.pflug@gmail.com
+
+-- copyright:
+category:        Testing
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+-- extra-source-files:
+
+common common-options
+  default-language:   Haskell2010
+  default-extensions: OverloadedStrings
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wredundant-constraints
+    -Wno-name-shadowing -Wno-type-defaults
+
+library
+  import:           common-options
+  exposed-modules:  Hurtig.Foo
+
+  -- other-modules:
+  -- other-extensions:
+  build-depends:    base ^>=4.15.1.0
+  hs-source-dirs:   src
+  default-language: Haskell2010
+
+executable hurtig
+  import:           common-options
+  main-is:          Main.hs
+
+  -- other-modules:
+  -- other-extensions:
+  build-depends:
+    , base    ^>=4.15.1.0
+    , hurtig
+
+  hs-source-dirs:   app
+  default-language: Haskell2010
+
+test-suite hurtig-test
+  import:             common-options
+  default-language:   Haskell2010
+
+  -- other-extensions:
+  type:               exitcode-stdio-1.0
+  hs-source-dirs:     test
+  main-is:            Spec.hs
+  other-modules:      Hurtig.FooSpec
+  build-tool-depends: hspec-discover:hspec-discover
+  build-depends:
+    , base    ^>=4.15.1.0
+    , hspec
+    , hurtig
