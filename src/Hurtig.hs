@@ -1,7 +1,8 @@
 module Hurtig where
 
 import qualified Data.List as L
-import Hurtig.QuickParser (parseQuickOutput, printQuickLog)
+import Hurtig.QuickLog (printQuickLog)
+import Hurtig.QuickParser (parseQuickOutput)
 
 runHurtig :: IO ()
 runHurtig = do

@@ -28,6 +28,7 @@ library
   import:           common-options
   exposed-modules:
     Hurtig
+    Hurtig.QuickLog
     Hurtig.QuickParser
 
   -- other-modules:

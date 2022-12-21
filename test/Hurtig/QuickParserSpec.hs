@@ -2,6 +2,7 @@ module Hurtig.QuickParserSpec (spec) where
 
 import Data.Either
 import qualified Data.Text as T
+import Hurtig.QuickLog
 import Hurtig.QuickParser
 import Test.Hspec
 import Text.Megaparsec
