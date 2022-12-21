@@ -1,6 +1,7 @@
 { system ? builtins.currentSystem
 , pins ? import ./npins
 , pkgs ? import pins.nixpkgs { inherit system; }
+, smoke ? import pins.smoke
 , hooks ? import pins."pre-commit-hooks.nix"
 }:
 
@@ -43,6 +44,7 @@ pkgs.mkShell {
     haskellPackages.haskell-ci
     watch-tests
     emacs
+    smoke
   ];
   shellHook = ''
   '';

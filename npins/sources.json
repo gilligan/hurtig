@@ -17,7 +17,21 @@
       "revision": "078b0dee35e2da01334af682ec347463b70a9986",
       "url": "https://github.com/cachix/pre-commit-hooks.nix/archive/078b0dee35e2da01334af682ec347463b70a9986.tar.gz",
       "hash": "10d2bylrxgzhff3iw8dawgp181clh2kfsa6vf3br2n6bhixd2h0l"
+    },
+    "smoke": {
+      "type": "GitRelease",
+      "repository": {
+        "type": "GitHub",
+        "owner": "SamirTalwar",
+        "repo": "smoke"
+      },
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "version": "v2.3.1",
+      "revision": "fa08c398968a505e132716a880dfa88a7f09f4b9",
+      "url": "https://api.github.com/repos/SamirTalwar/smoke/tarball/v2.3.1",
+      "hash": "1637w8qdw5y131d11v4vrmf15912478fr4vf7v3w0s0vppphcsg2"
     }
   },
-  "version": 2
+  "version": 3
 }
