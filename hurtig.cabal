@@ -26,11 +26,18 @@ common common-options
 
 library
   import:           common-options
-  exposed-modules:  Hurtig.Foo
+  exposed-modules:
+    Hurtig
+    Hurtig.QuickParser
 
   -- other-modules:
   -- other-extensions:
-  build-depends:    base ^>=4.15.1.0
+  build-depends:
+    , base           ^>=4.15.1.0
+    , megaparsec
+    , prettyprinter
+    , text
+
   hs-source-dirs:   src
   default-language: Haskell2010
 
@@ -43,6 +50,7 @@ executable hurtig
   build-depends:
     , base    ^>=4.15.1.0
     , hurtig
+    , text
 
   hs-source-dirs:   app
   default-language: Haskell2010
@@ -55,9 +63,11 @@ test-suite hurtig-test
   type:               exitcode-stdio-1.0
   hs-source-dirs:     test
   main-is:            Spec.hs
-  other-modules:      Hurtig.FooSpec
+  other-modules:      Hurtig.QuickParserSpec
   build-tool-depends: hspec-discover:hspec-discover
   build-depends:
-    , base    ^>=4.15.1.0
+    , base        ^>=4.15.1.0
     , hspec
     , hurtig
+    , megaparsec
+    , text

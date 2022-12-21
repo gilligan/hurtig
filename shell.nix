@@ -42,6 +42,7 @@ pkgs.mkShell {
     haskellPackages.cabal-fmt
     haskellPackages.haskell-ci
     watch-tests
+    emacs
   ];
   shellHook = ''
   '';

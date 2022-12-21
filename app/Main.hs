@@ -1,7 +1,6 @@
 module Main where
 
-import Hurtig.Foo
+import Hurtig
 
 main :: IO ()
-main = do
-  putStrLn $ "Hello, Haskell!" ++ show foo
+main = runHurtig
