@@ -1,0 +1,11 @@
+command:
+  - cabal
+  - --verbose=0
+  - run
+  - hurtig
+tests:
+  - name: simple success output
+    stdin:
+      file: ./quick-simple-success.in
+    stdout:
+      file: ./quick-simple-success.out
