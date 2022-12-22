@@ -9,3 +9,8 @@ tests:
       file: ./quick-simple-success.in
     stdout:
       file: ./quick-simple-success.out
+  - name: simple failure output
+    stdin:
+      file: ./quick-failed-test.in
+    stdout:
+      file: ./quick-failed-test.out

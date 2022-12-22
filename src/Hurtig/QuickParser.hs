@@ -51,11 +51,36 @@ casePassParser = do
   _ <- string "passed" <* space1
   return $ QuickLogCasePass str
 
+caseFailParser :: Parser QuickLog
+caseFailParser = do
+  _ <- string "Test Case" <* space1
+  _ <- char '\''
+  str <- commaSep
+  _ <- char '\'' <* space1
+  _ <- string "failed" <* space1
+  return $ QuickLogCaseFail str
+
+expectationFailParser :: Parser QuickLog
+expectationFailParser = do
+  _ <- pathAndLineNo
+  space1
+  _ <- string "error:" <* space1
+  casePath <- commaSep
+  _ <- string ": failed - "
+  -- TODO: I am only dropping whitespace here because i failed to adjust
+  --       commaSep to not include trailing whitespace. I should figure
+  --       this out ;/
+  QuickLogExpectationFailure (dropWhiteSpace <$> casePath) . T.unpack <$> takeRest
+  where
+    pathAndLineNo = char '/' *> manyTill anySingle (char ':') <* decimal <* char ':'
+    dropWhiteSpace = reverse . dropWhile (== ' ') . reverse
+
 quickLogOutput :: Parser QuickLog
-quickLogOutput = try suiteStart <|> try suitePass <|> try caseStartParser <|> try casePassParser <|> miscInfo
+quickLogOutput = try suiteStart <|> try suitePass <|> try suiteFail <|> try caseStartParser <|> try casePassParser <|> try caseFailParser <|> try expectationFailParser <|> miscInfo
   where
     suiteStart = suiteParser QuickLogSuiteStart "started at"
     suitePass = suiteParser QuickLogSuitePass "passed at"
+    suiteFail = suiteParser QuickLogSuiteFail "failed at"
 
 parseQuickOutput :: String -> Either (ParseErrorBundle T.Text Void) [QuickLog]
 parseQuickOutput str =
@@ -63,8 +88,11 @@ parseQuickOutput str =
    in traverse (runParser quickLogOutput "") input
 
 miscInfo :: Parser QuickLog
-miscInfo = try buildComplete <|> buildInfo <|> linkInfo <|> execInfo
+miscInfo = try buildComplete <|> buildInfo <|> linkInfo <|> execInfo <|> emptyString
   where
+    emptyString = do
+      eof
+      return $ QuickLogInfo ""
     buildInfo = do
       _ <- string "Building for"
       text <- some charLiteral
@@ -90,5 +118,5 @@ miscInfo = try buildComplete <|> buildInfo <|> linkInfo <|> execInfo
       numTests <- decimal <* space1
       _ <- string "tests, with" <* space1
       numFail <- decimal <* space1
-      _ <- string "failures"
+      _ <- string "failures" <|> string "failure"
       return $ QuickLogInfo $ "Executed " ++ show numTests ++ " tests with " ++ show numFail ++ " failures"

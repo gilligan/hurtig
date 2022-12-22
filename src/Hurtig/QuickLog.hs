@@ -18,15 +18,38 @@ data UTCTime = UTCTime
 
 data QuickLog
   = -- | '''Test Suite 'All tests' started at 2022-12-17 23:08:03.162'''
-    QuickLogSuiteStart String UTCTime
+    QuickLogSuiteStart
+      { suiteName :: String,
+        suiteStart :: UTCTime
+      }
   | -- | ''' Test Suite 'All tests' passed at 2022-12-17 23:08:03.164'''
-    QuickLogSuitePass String UTCTime
+    QuickLogSuitePass
+      { suiteName :: String,
+        suiteFinished :: UTCTime
+      }
+  | -- | ''' Test Suite 'All tests' failed at 2022-12-17 23:08:03.164'''
+    QuickLogSuiteFail
+      { suiteName :: String,
+        suiteFinished :: UTCTime
+      }
   | -- | '''Test Case 'QuickSpec.SwiftFoo, Util, getInput, reads data from file' started at 2022-12-17 23:08:03.163'''
-    QuickLogCaseStart [String] UTCTime
+    QuickLogCaseStart
+      { testCasePath :: [String],
+        testCaseStart :: UTCTime
+      }
   | -- | '''Test Case 'QuickSpec.SwiftFoo, Util, getInput, reads data from file' passed (0.001 seconds)'''
-    QuickLogCasePass [String]
+    QuickLogCasePass
+      {testCasePath :: [String]}
+  | -- | '''Test Case 'QuickSpec.SwiftFoo, Util, getInput, reads data from file' passed (0.001 seconds)'''
+    QuickLogCaseFail
+      {testCasePath :: [String]}
+  | -- | /Tests/QuickTests/FooTest.swift:24: error: QuickSpec.SwiftFoo, Util, composition, composes two functions : failed - expected to equal <7>, got <6>
+    QuickLogExpectationFailure
+      { testCasePath :: [String],
+        errorInfo :: String
+      }
   | -- | Any other output
-    QuickLogInfo String
+    QuickLogInfo {info :: String}
   deriving (Eq, Show)
 
 prettyUTCTime :: UTCTime -> Doc ann
@@ -56,6 +79,8 @@ prettyQuickLog ql = case ql of
     "Test Suite '" <> pretty name <> "' started at " <> prettyUTCTime time
   QuickLogSuitePass name time ->
     "Test Suite '" <> pretty name <> "' passed at " <> prettyUTCTime time
+  QuickLogSuiteFail name time ->
+    "Test Suite '" <> pretty name <> "' failed at " <> prettyUTCTime time
   QuickLogCaseStart names time ->
     let p = L.intersperse ", " $ init names
         path = hcat (map (pretty . T.pack) p)
@@ -63,5 +88,9 @@ prettyQuickLog ql = case ql of
      in "Test Case '" <> path <> ", " <> pretty testDesc <> "' started at " <> prettyUTCTime time
   QuickLogCasePass names ->
     "Test Case '" <> hcat (map (pretty . T.pack) names) <> "' passed"
+  QuickLogCaseFail names ->
+    "Test Case '" <> hcat (map (pretty . T.pack) names) <> "' failed"
+  QuickLogExpectationFailure p info ->
+    "error: " <> hcat (map (pretty . T.pack) p) <> " failed - " <> pretty info
   QuickLogInfo s ->
     pretty s

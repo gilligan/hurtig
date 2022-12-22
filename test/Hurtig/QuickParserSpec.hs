@@ -2,35 +2,11 @@ module Hurtig.QuickParserSpec (spec) where
 
 import Data.Either
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import Hurtig.QuickLog
 import Hurtig.QuickParser
 import Test.Hspec
 import Text.Megaparsec
-
-sampleSuccessOutput :: T.Text
-sampleSuccessOutput =
-  T.unlines
-    [ "Building for debugging...",
-      "[13/13] Linking SwiftFooPackageTests.xctest",
-      "Build complete! (1.78s)",
-      "Test Suite 'All tests' started at 2022-12-17 23:08:03.162",
-      "Test Suite 'debug.xctest' started at 2022-12-17 23:08:03.163",
-      "Test Suite 'QuickSpec' started at 2022-12-17 23:08:03.163",
-      "Test Case 'QuickSpec.SwiftFoo, Util, getInput, reads data from file' started at 2022-12-17 23:08:03.163",
-      "Test Case 'QuickSpec.SwiftFoo, Util, getInput, reads data from file' passed (0.001 seconds)",
-      "Test Case 'QuickSpec.SwiftFoo, Util, getInput, applies the function to the file contents if specified' started at 2022-12-17 23:08:03.164",
-      "Test Case 'QuickSpec.SwiftFoo, Util, getInput, applies the function to the file contents if specified' passed (0.0 seconds)",
-      "Test Case 'QuickSpec.SwiftFoo, Day1, part1, finds the total of the elve carrying the most calories' started at 2022-12-17 23:08:03.164",
-      "Test Case 'QuickSpec.SwiftFoo, Day1, part1, finds the total of the elve carrying the most calories' passed (0.0 seconds)",
-      "Test Case 'QuickSpec.SwiftFoo, Day1, part2, finds the sum of the top 3 elves' started at 2022-12-17 23:08:03.164",
-      "Test Case 'QuickSpec.SwiftFoo, Day1, part2, finds the sum of the top 3 elves' passed (0.0 seconds)",
-      "Test Suite 'QuickSpec' passed at 2022-12-17 23:08:03.164",
-      "         Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds",
-      "Test Suite 'debug.xctest' passed at 2022-12-17 23:08:03.164",
-      "         Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds",
-      "Test Suite 'All tests' passed at 2022-12-17 23:08:03.164",
-      "         Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds"
-    ]
 
 spec :: Spec
 spec = do
@@ -74,6 +50,17 @@ spec = do
           case runParser quickLogOutput "" "         Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds" of
             Right res -> res `shouldBe` QuickLogInfo "Executed 4 tests with 0 failures"
             Left x -> expectationFailure $ show x
+        it "parses an expectation failure" $ do
+          case runParser quickLogOutput "" "/Tests/QuickTests/FooTest.swift:24: error: QuickSpec.SwiftFoo, Util, composition, composes two functions : failed - expected to equal <7>, got <6>" of
+            Right res -> res `shouldBe` QuickLogExpectationFailure ["QuickSpec.SwiftFoo", "Util", "composition", "composes two functions"] "expected to equal <7>, got <6>"
+            Left x -> expectationFailure $ show x
         it "parses the full output of a successful run" $ do
-          let res = traverse (runParser quickLogOutput "") (T.lines sampleSuccessOutput)
+          successOutput <- T.lines <$> TIO.readFile "./smoke-tests/quick-simple-success.in"
+          let res = traverse (runParser quickLogOutput "") successOutput
           isRight res `shouldBe` True
+        it "parses the full output of a failed run" $ do
+          failedOutput <- T.lines <$> TIO.readFile "./smoke-tests/quick-failed-test.in"
+          let res = traverse (runParser quickLogOutput "") (filter (/= "") failedOutput)
+          case res of
+            Right _ -> pure ()
+            Left err -> expectationFailure $ show err
