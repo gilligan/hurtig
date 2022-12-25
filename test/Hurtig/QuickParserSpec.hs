@@ -32,7 +32,7 @@ spec = do
             Left x -> expectationFailure $ show x
         it "parses the passing of a test case" $ do
           case runParser quickLogOutput "" "Test Case 'QuickSpec.SwiftFoo, Util, getInput, reads data from file' passed (0.001 seconds)" of
-            Right res -> res `shouldBe` QuickLogCasePass ["QuickSpec.SwiftFoo", "Util", "getInput", "reads data from file"]
+            Right res -> res `shouldBe` QuickLogCasePass ["QuickSpec.SwiftFoo", "Util", "getInput"] "reads data from file"
             Left x -> expectationFailure $ show x
         it "parses Building Info output as QuickLogInfo" $ do
           case runParser quickLogOutput "" "Building for debugging..." of

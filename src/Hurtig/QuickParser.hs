@@ -49,7 +49,9 @@ casePassParser = do
   str <- commaSep
   _ <- char '\'' <* space1
   _ <- string "passed" <* space1
-  return $ QuickLogCasePass str
+  let testPath = init str
+  let testDesc = last str
+  return $ QuickLogCasePass testPath testDesc
 
 caseFailParser :: Parser QuickLog
 caseFailParser = do

@@ -39,7 +39,9 @@ data QuickLog
       }
   | -- | '''Test Case 'QuickSpec.SwiftFoo, Util, getInput, reads data from file' passed (0.001 seconds)'''
     QuickLogCasePass
-      {testCasePath :: [String]}
+      { testCasePath :: [String],
+        desc :: String
+      }
   | -- | '''Test Case 'QuickSpec.SwiftFoo, Util, getInput, reads data from file' passed (0.001 seconds)'''
     QuickLogCaseFail
       {testCasePath :: [String]}
@@ -86,8 +88,8 @@ prettyQuickLog ql = case ql of
         path = hcat (map (pretty . T.pack) p)
         testDesc = last names
      in "Test Case '" <> path <> ", " <> pretty testDesc <> "' started at " <> prettyUTCTime time
-  QuickLogCasePass names ->
-    "Test Case '" <> hcat (map (pretty . T.pack) names) <> "' passed"
+  QuickLogCasePass casePath desc ->
+    "Test Case '" <> hcat (map (pretty . T.pack) (casePath ++ [desc])) <> "' passed"
   QuickLogCaseFail names ->
     "Test Case '" <> hcat (map (pretty . T.pack) names) <> "' failed"
   QuickLogExpectationFailure p info ->
