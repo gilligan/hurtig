@@ -6,11 +6,6 @@ command:
 tests:
   - name: simple success output
     stdin:
-      file: ./quick-simple-success.in
+      file: ./successful-test-run.in
     stdout:
-      file: ./quick-simple-success.out
-  - name: simple failure output
-    stdin:
-      file: ./quick-failed-test.in
-    stdout:
-      file: ./quick-failed-test.out
+      file: ./successful-test-run.out

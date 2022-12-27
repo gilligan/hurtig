@@ -48,6 +48,13 @@ spec = do
                     [TestSpec (TestInfo True "does foo")]
                 ]
             ]
+      it "adds test paths when necessary" $
+        insert (QuickLogCasePass ["A", "Z"] "bar") (TestTree "A" [TestTree "B" [TestTree "C" [TestSpec (TestInfo True "foo")]]])
+          `shouldBe` TestTree
+            "A"
+            [ TestTree "B" [TestTree "C" [TestSpec (TestInfo True "foo")]],
+              TestTree "Z" [TestSpec (TestInfo True "bar")]
+            ]
     describe "fromQuickLog" $ do
       it "is identical to insert for a single item" $
         fromQuickLog [QuickLogCasePass ["QuickSpec", "Foo"] "does foo"]

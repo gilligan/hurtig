@@ -90,7 +90,7 @@ parseQuickOutput str =
    in traverse (runParser quickLogOutput "") input
 
 miscInfo :: Parser QuickLog
-miscInfo = try buildComplete <|> buildInfo <|> linkInfo <|> execInfo <|> emptyString
+miscInfo = try buildComplete <|> buildInfo <|> progressInfo <|> execInfo <|> emptyString
   where
     emptyString = do
       eof
@@ -100,15 +100,14 @@ miscInfo = try buildComplete <|> buildInfo <|> linkInfo <|> execInfo <|> emptySt
       text <- some charLiteral
       return $ QuickLogInfo $ "Building for" ++ text
 
-    linkInfo = do
+    progressInfo = do
       _ <- char '['
       x <- decimal
       _ <- char '/'
       y <- decimal
       _ <- char ']' <* space1
-      _ <- string "Linking" <* space1
-      name <- some (alphaNumChar <|> char '.')
-      return $ QuickLogInfo $ "[" ++ show x ++ "/" ++ show y ++ "] Linking " ++ name
+      rest <- some (alphaNumChar <|> char '.' <|> char ' ')
+      return $ QuickLogInfo $ "[" ++ show x ++ "/" ++ show y ++ "] " ++ rest
 
     buildComplete = do
       _ <- string "Build complete!"

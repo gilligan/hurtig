@@ -1,0 +1,13 @@
+  QuickSpec
+    SwiftFoo
+      Day1
+        part2
+          finds the sum of the top 3 elves [✔]
+        part1
+          finds the total of the elve carrying the most calories [✔]
+      Util
+        composition
+          composes two functions [✔]
+        getInput
+          reads data from file [✔]
+          applies the function to the file contents if specified [✔]

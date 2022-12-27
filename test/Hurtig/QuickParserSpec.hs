@@ -1,8 +1,5 @@
 module Hurtig.QuickParserSpec (spec) where
 
-import Data.Either
-import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
 import Hurtig.QuickLog
 import Hurtig.QuickParser
 import Test.Hspec
@@ -54,13 +51,3 @@ spec = do
           case runParser quickLogOutput "" "/Tests/QuickTests/FooTest.swift:24: error: QuickSpec.SwiftFoo, Util, composition, composes two functions : failed - expected to equal <7>, got <6>" of
             Right res -> res `shouldBe` QuickLogExpectationFailure ["QuickSpec.SwiftFoo", "Util", "composition", "composes two functions"] "expected to equal <7>, got <6>"
             Left x -> expectationFailure $ show x
-        it "parses the full output of a successful run" $ do
-          successOutput <- T.lines <$> TIO.readFile "./smoke-tests/quick-simple-success.in"
-          let res = traverse (runParser quickLogOutput "") successOutput
-          isRight res `shouldBe` True
-        it "parses the full output of a failed run" $ do
-          failedOutput <- T.lines <$> TIO.readFile "./smoke-tests/quick-failed-test.in"
-          let res = traverse (runParser quickLogOutput "") (filter (/= "") failedOutput)
-          case res of
-            Right _ -> pure ()
-            Left err -> expectationFailure $ show err
