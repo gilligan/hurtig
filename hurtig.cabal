@@ -1,6 +1,7 @@
 cabal-version:   3.4
 name:            hurtig
 version:         0.1.0.0
+tested-with:     GHC ==9.0.2
 
 -- synopsis:
 -- description:
