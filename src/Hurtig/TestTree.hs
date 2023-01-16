@@ -25,17 +25,21 @@ hasChild str tree = str `elem` foldMap getName (children tree)
     getName (TestTree n _) = [n]
     getName _ = []
 
+insertTo :: [String] -> QuickTestTree -> QuickTestTree -> QuickTestTree
+insertTo _ _ (TestSpec x) = TestSpec x
+insertTo path (TestSpec x) tree@(TestTree name [])
+  | length path == 1 && head path == name = TestTree name [TestSpec x]
+  | length path > 1 && head path == name = TestTree name [insertTo (tail path) (TestSpec x) (TestTree (head $ tail path) [])]
+  | otherwise = tree
+insertTo path (TestSpec x) tree@(TestTree name ts)
+  | length path == 1 && head path == name = TestTree name (TestSpec x : ts)
+  | length path > 1 && head path == name && hasChild (head $ tail path) tree = TestTree name (insertTo (tail path) (TestSpec x) <$> ts)
+  | length path > 1 && head path == name && not (hasChild (head $ tail path) tree) = TestTree name (insertTo (tail path) (TestSpec x) <$> (ts ++ [TestTree (head $ tail path) []]))
+  | otherwise = tree
+insertTo _ _ tree = tree
+
 insert :: QuickLog -> QuickTestTree -> QuickTestTree
-insert (QuickLogCasePass _ _) (TestSpec x) = TestSpec x
-insert (QuickLogCasePass path exp) tree@(TestTree name [])
-  | length path == 1 && head path == name = TestTree name [TestSpec $ TestInfo True exp]
-  | length path > 1 && head path == name = TestTree name [insert (QuickLogCasePass (tail path) exp) (TestTree (head $ tail path) [])]
-  | otherwise = tree
-insert (QuickLogCasePass path exp) tree@(TestTree name ts)
-  | length path == 1 && head path == name = TestTree name (TestSpec (TestInfo True exp) : ts)
-  | length path > 1 && head path == name && hasChild (head $ tail path) tree = TestTree name (insert (QuickLogCasePass (tail path) exp) <$> ts)
-  | length path > 1 && head path == name && not (hasChild (head $ tail path) tree) = TestTree name (insert (QuickLogCasePass (tail path) exp) <$> (ts ++ [TestTree (head $ tail path) []]))
-  | otherwise = tree
+insert (QuickLogCasePass p exp) tree = insertTo p (TestSpec $ TestInfo True exp) tree
 insert _ tree = tree
 
 fromQuickLog :: [QuickLog] -> QuickTestTree
